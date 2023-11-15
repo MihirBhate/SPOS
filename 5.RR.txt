@@ -1,0 +1,64 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+struct Process {
+    int id;
+    int arrival_time;
+    int burst_time;
+    int priority;
+};
+
+void RoundRobin(vector<Process>& processes, int time_slice) {
+    cout << "Round Robin Scheduling:" << endl;
+    int n = processes.size();
+    int time = 0;
+    int completed = 0;
+
+    queue<int> process_queue;
+    vector<int> remaining_time(n);
+
+    for (int i = 0; i < n; i++) {
+        remaining_time[i] = processes[i].burst_time;
+        process_queue.push(i);
+    }
+
+    while (completed < n) {
+        int current_process = process_queue.front();
+        process_queue.pop();
+
+        if (remaining_time[current_process] > time_slice) {
+            remaining_time[current_process] -= time_slice;
+            time += time_slice;
+            cout << "Process " << processes[current_process].id << " is executing." << endl;
+            process_queue.push(current_process);
+        } else {
+            time += remaining_time[current_process];
+            remaining_time[current_process] = 0;
+            cout << "Process " << processes[current_process].id << " is executing." << endl;
+            cout << "Process " << processes[current_process].id << " completed at time " << time << endl;
+            completed++;
+        }
+    }
+
+    cout << "------------------------" << endl;
+}
+
+int main() {
+    vector<Process> processes = {
+        {1, 0, 5, 2},
+        {2, 2, 3, 1},
+        {3, 3, 2, 3},
+        {4, 5, 8, 4}
+    };
+
+    int time_slice;
+    cout << "Enter time slice for Round Robin: ";
+    cin >> time_slice;
+
+    RoundRobin(processes, time_slice);
+
+    return 0;
+}
